@@ -1,0 +1,78 @@
+###Hello World
+POST {{funcUrl}}/api/fn-hello-world?code={{funcKey}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Bablu"
+}
+
+###HTTP function for database query
+POST {{funcUrl}}/api/fn-query-sql-db?code={{funcKey}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "server" : "pvlab-fe00b4-synapse.sql.azuresynapse.net",
+  "database" : "sqldp01",
+  "output" : "json",
+  "query": "SELECT TOP 3 * FROM Sales.Address;"
+}
+
+###HTTP function for database query
+@query="SELECT TOP(1000) [AddressLine1],[AddressLine2],[City],[StateProvince],[CountryRegion],[PostalCode],[rowguid] FROM [Sales].[Address]"
+POST {{funcUrl}}/api/fn-query-sql-db?code={{funcKey}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "server" : "pvlab-fe00b4-synapse.sql.azuresynapse.net",
+  "database" : "sqldp01",
+  "output" : "json",
+  "query": {{query}}
+}
+
+###HTTP function for database query
+POST {{funcUrl}}/api/fn-query-sql-db?code={{funcKey}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "server" : "azsynapsewksxqwjeq.sql.azuresynapse.net",
+  "database" : "sqldp01",
+  "output" : "json",
+  "query": "SELECT TOP 3 * FROM SalesLT.Customer;"
+}
+
+POST {{funcUrl}}/api/fn-query-sql-db?code={{funcKey}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "server" : "azsynapsewksxqwjeq.sql.azuresynapse.net",
+  "database" : "sqldp01",
+  "output" : "json",
+  "query": """
+  SELECT TOP (1000) [CustomerID]
+      ,[NameStyle]
+      ,[Title]
+      ,[FirstName]
+      ,[MiddleName]
+      ,[LastName]
+      ,[Suffix]
+      ,[CompanyName]
+      ,[SalesPerson]
+      ,[EmailAddress]
+      ,[Phone]
+      ,[PasswordHash]
+      ,[PasswordSalt]
+      ,[rowguid]
+      ,[ModifiedDate]
+  FROM [SalesLT].[Customer]
+  """
+}
+
+
+
+
+
+
+
+
+
+
