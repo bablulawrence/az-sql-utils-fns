@@ -2,22 +2,9 @@ import azure.functions as func
 import logging
 import json
 import pyodbc
-import struct
 import os
 from time import time
-from azure.identity import DefaultAzureCredential
 
-def get_access_token():
-        creds = DefaultAzureCredential()
-        token = creds.get_token("https://database.windows.net/.default")
-        tokenb = bytes(token.token, "UTF-8")
-        exptoken = b''
-
-        for i in tokenb:
-            exptoken += bytes({i})
-            exptoken += bytes(1)
-            tokenstruct = struct.pack("=i", len(exptoken)) + exptoken    
-        return tokenstruct
 
 def execute_query(cursor, query): 
     cursor.execute(query)
@@ -47,9 +34,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         func.HttpResponse("One or more required parameters are missing", status_code = 400)
 
     conn_string = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={login};PWD={password}"
-    SQL_COPT_SS_ACCESS_TOKEN = 1256
     try:
-        # access_token = get_access_token()
         with pyodbc.connect(conn_string) as conn:
             with conn.cursor() as cursor:
                 if (output == 'json'):
