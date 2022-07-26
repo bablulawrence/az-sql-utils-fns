@@ -23,6 +23,7 @@ def execute_query(cursor, query):
     rows = []
     for row in cursor:
         rows += [[elem for elem in row]]
+    cursor.close()
     return rows
 
     
@@ -46,23 +47,47 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     conn_string = f"DRIVER={driver};SERVER={server};DATABASE={database};autocommit=true"
     SQL_COPT_SS_ACCESS_TOKEN = 1256
+    # try:
+    #     access_token = get_access_token()
+    #     with pyodbc.connect(conn_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: access_token}) as conn:
+    #         with conn.cursor() as cursor:
+    #             if (output == 'json'):
+    #                 rows = execute_query(cursor, query)
+    #                 return func.HttpResponse(json.dumps(rows), status_code=200)
+    #             elif (output == 'stats'):
+    #                 start_time = time()
+    #                 execute_query(cursor, query)
+    #                 end_time = time()
+    #                 return func.HttpResponse(json.dumps({ "executionTime" : end_time - start_time }),
+    #                                      status_code = 200) 
+    #             else: 
+    #                 return func.HttpResponse('Invalid output type', status_code = 400)
+    # except Exception as e:
+    #     logging.exception(e)        
+    #     return func.HttpResponse(str(e), status_code=500)    
+
+    conn = None 
     try:
         access_token = get_access_token()
-        with pyodbc.connect(conn_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: access_token}) as conn:
-            with conn.cursor() as cursor:
-                if (output == 'json'):
-                    rows = execute_query(cursor, query)
-                    return func.HttpResponse(json.dumps(rows), status_code=200)
-                elif (output == 'stats'):
-                    start_time = time()
-                    execute_query(cursor, query)
-                    end_time = time()
-                    return func.HttpResponse(json.dumps({ "executionTime" : end_time - start_time }),
-                                         status_code = 200) 
-                else: 
-                    return func.HttpResponse('Invalid output type', status_code = 400)
-
-    except Exception as e: 
-        logging.exception(e)
-        return func.HttpResponse(str(e), status_code=500)
+        conn = pyodbc.connect(conn_string, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: access_token})
+        cursor = conn.cursor()
+        if (output == 'json'):
+                rows = execute_query(cursor, query)
+                return func.HttpResponse(json.dumps(rows), status_code=200)
+        elif (output == 'stats'):
+            start_time = time()
+            execute_query(cursor, query)
+            end_time = time()
+            return func.HttpResponse(json.dumps({ "executionTime" : end_time - start_time }),
+                                    status_code = 200) 
+        else:     
+            return func.HttpResponse('Invalid output type', status_code = 400)        
+    except Exception as e:
+        logging.exception(e)        
+        return func.HttpResponse(str(e), status_code=500)    
+    finally:
+        if(conn):
+            conn.close()
+            logging.info('Connection closed')
+        
     
