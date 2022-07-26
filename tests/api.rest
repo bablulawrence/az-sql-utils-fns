@@ -6,8 +6,35 @@ Content-Type: application/json
   "name": "Bablu"
 }
 
+###Durable HTTP starter for database query
+POST {{funcUrl}}/api/orchestrators/fn-drbl-query-sql-db-orchstr?code={{funcKey}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "server" : "pvlab-fe00b4-synapse.sql.azuresynapse.net",
+  "database" : "sqldp01",
+  "output" : "json",
+  "load": 1,
+  "query": "SELECT TOP 20 * FROM Sales.Customer;"
+}
+
 ###HTTP function for database query using SQL auth
-@query1="SELECT TOP(10) [AddressLine1],[AddressLine2],[City],[StateProvince],[CountryRegion],[PostalCode],[rowguid] FROM [SalesLT].[Address];"
+@query_d765j8="EXECUTE dbo.GetCustomer N'Lee', N'Mark';"
+# @query_d765j8="SELECT 1;"
+# @query_d765j8="SELECT TOP (10) [CustomerID] FROM [SalesLT].[Customer]"
+# @query_d765j8="SELECT CustomerID, NameStyle, Title, FirstName, MiddleName, LastName FROM SalesLT.Customer"
+POST {{funcUrl}}/api/fn-query-sql-db?code={{funcKey}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "server" : "azsynapsewksxqwjeq.sql.azuresynapse.net",
+  "database" : "sqldp01",
+  "output" : "json",
+  "query": {{query_d765j8}}
+}
+
+###HTTP function for database query using SQL auth
+# @query1="SELECT TOP(10) [AddressLine1],[AddressLine2],[City],[StateProvince],[CountryRegion],[PostalCode],[rowguid] FROM [SalesLT].[Address];"
 POST {{funcUrl}}/api/fn-query-sql-db-sql-auth?code={{funcKey}} HTTP/1.1
 Content-Type: application/json
 
@@ -15,7 +42,7 @@ Content-Type: application/json
   "server" : "azsynapsewksxqwjeq.sql.azuresynapse.net",
   "database" : "sqldp01",
   "output" : "json",
-  "query": {{query1}}
+  "query": {{query_d765j8}}
 }
 
 ###HTTP function for database query using access token

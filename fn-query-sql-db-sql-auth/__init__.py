@@ -33,7 +33,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if (not server or not database or not output or not query):
         func.HttpResponse("One or more required parameters are missing", status_code = 400)
 
-    conn_string = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={login};PWD={password}"
+    conn_string = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={login};PWD={password};autocommit=True"
     try:
         with pyodbc.connect(conn_string) as conn:
             with conn.cursor() as cursor:
